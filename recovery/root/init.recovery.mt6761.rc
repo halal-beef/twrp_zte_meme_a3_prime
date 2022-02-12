@@ -1,0 +1,56 @@
+on init
+    setprop sys.usb.ffs.aio_compat 1
+    setprop sys.usb.configfs 1
+
+on post-fs
+    write /config/usb_gadget/g1/bcdDevice 0x0223
+    write /config/usb_gadget/g1/bcdUSB 0x0200
+    mkdir /config/usb_gadget/g1/functions/mtp.gs0
+    write /config/usb_gadget/g1/functions/mtp.gs0/os_desc/interface.MTP/compatible_id "MTP"
+    write /config/usb_gadget/g1/os_desc/b_vendor_code 0x1
+    write /config/usb_gadget/g1/os_desc/qw_sign "MSFT100"
+    write /config/usb_gadget/g1/configs/b.1/MaxPower 500
+
+on property:sys.usb.config=none
+    write /config/usb_gadget/g1/UDC "none"
+    write /config/usb_gadget/g1/idVendor 0x18D1
+    stop mtpd
+    setprop sys.usb.ffs.mtp.ready 0
+    rm /config/usb_gadget/g1/configs/b.1/f2
+
+service mtpd /sbin/recoverymtp
+    seclabel u:r:recovery:s0
+    disabled
+
+on property:sys.usb.config=sua_sideload
+    start mtpd
+
+on property:sys.usb.config=adb
+    stop mtpd
+
+on property:init.svc.adbd=stopped
+    setprop sys.usb.ffs.ready 0
+    setprop sys.usb.ffs.mtp.ready 0
+    stop mtpd
+
+on property:init.svc.mtpd=stopped
+    setprop sys.usb.ffs.mtp.ready 0
+
+# mtp,adb
+on property:sys.usb.ffs.ready=1 && property:sys.usb.config=sua_sideload
+    write /config/usb_gadget/g1/idVendor 0x19D2
+    write /config/usb_gadget/g1/idProduct 0x0245
+    write /config/usb_gadget/g1/configs/b.1/strings/0x409/configuration "mtp_adb"
+    symlink /config/usb_gadget/g1/functions/mtp.gs0 /config/usb_gadget/g1/configs/b.1/f1
+    symlink /config/usb_gadget/g1/functions/ffs.adb /config/usb_gadget/g1/configs/b.1/f2
+    write /config/usb_gadget/g1/UDC ${sys.usb.controller}
+    setprop sys.usb.state ${sys.usb.config}
+
+on post-fs
+    # Support A/B feature for emmc boot region
+    #symlink /dev/block/sda /dev/block/mmcblk0boot0
+    #symlink /dev/block/sdb /dev/block/mmcblk0boot1
+    symlink /dev/block/mmcblk0boot0 /dev/block/platform/bootdevice/by-name/preloader_a
+    symlink /dev/block/mmcblk0boot1 /dev/block/platform/bootdevice/by-name/preloader_b
+    symlink /dev/block/mmcblk0boot0 /dev/block/by-name/preloader_a
+    symlink /dev/block/mmcblk0boot1 /dev/block/by-name/preloader_b

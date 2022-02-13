@@ -14,7 +14,7 @@ on:
 
 env:
   MANIFEST: https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp -b twrp-11
-  DEVICE: Z5157
+  DEVICE: 
   DT_LINK: https://github.com/SmallPP420/twrp_zte_meme_a3_prime.git
   DT_PATH: device/zte/Z5157
   TARGET: recoveryimage
@@ -61,7 +61,7 @@ jobs:
          run: |
               PATH=~/bin:$PATH
               cd twrp
-              export ALLOW_MISSING_DEPENDENCIES=true && source build/envsetup.sh &&lunch twrp_Power_5-eng && mka $TARGET -j4
+              export ALLOW_MISSING_DEPENDENCIES=true && source build/envsetup.sh &&lunch twrp_Z5157-eng && mka $TARGET -j4
              
        - name: Release recovery image
          uses: softprops/action-gh-release@v1

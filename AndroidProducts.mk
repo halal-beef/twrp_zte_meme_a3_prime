@@ -17,4 +17,4 @@
 #
 
 PRODUCT_MAKEFILES := \
-     $(LOCAL_DIR)/omni_Z5157.mk
+     $(LOCAL_DIR)/twrp_Z5157.mk

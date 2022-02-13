@@ -55,7 +55,7 @@ jobs:
        - name: Checkout device tree
          uses: actions/checkout@v2
          with:
-          path: twrp/device/umidigi/Power_5
+          path: twrp/device/zte/Z5157
              
        - name: Build
          run: |

@@ -17,7 +17,7 @@ env:
   DEVICE: 
   DT_LINK: https://github.com/SmallPP420/twrp_zte_meme_a3_prime.git
   DT_PATH: device/zte/Z5157
-  TARGET: bootimage
+  TARGET: recoveryimage
   TZ: Asia/manila
 
 jobs:
